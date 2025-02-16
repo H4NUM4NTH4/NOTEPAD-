@@ -10,18 +10,29 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get('/', function(req, res){
   fs.readdir('./files', function(err, files){
-    res.render("index", {files:files});
+    res.render("index", {files:files}); //every new task created will be added to the files folder and basically acts as the storage
   })
 })
 
 app.get('/file/:filename', function(req, res){
-  fs.readFile(`./files/${req.params.filename}` ,"utf-8" ,function(err, filedata){
-    res.render('show', {filename: req.params.filename, filedata: filedata});
+  fs.readFile(`./files/${req.params.filename}` ,"utf-8" ,function(err, filedata){  //utf-8 to convert binary data to text type
+    res.render('show', {filename: req.params.filename, filedata: filedata});  //rendering/showing the note contained in the card
+  })
+})
+
+//Edit page
+app.get('/edit/:filename', function(req, res){
+    res.render('edit', {filename: req.params.filename});
+})
+
+app.post('/edit', function(req, res){
+  fs.rename(`./files/${req.body.previous}`, `./files/${req.body.new}`, function(err){
+    res.redirect("/");
   })
 })
 
 app.post('/create', function(req, res){
-  fs.writeFile(`./files/${req.body.title.split(' ').join('')}.txt`, req.body.details, function(err){
+  fs.writeFile(`./files/${req.body.title.split(' ').join('')}.txt`, req.body.details, function(err){ //writing into int the file and naming the file 
     res.redirect("/")
   });
 })
